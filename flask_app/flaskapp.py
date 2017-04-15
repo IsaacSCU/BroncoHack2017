@@ -90,7 +90,10 @@ def get_watson_response(alexa_text):
 @app.route("/response", methods=['GET'])
 def response():
     connection = Elasticsearch(hosts='{}:{}'.format(HOST, PORT))
-    res = connection.search(index="bronco-hack-2017", doc_type="therapy_session", body={"query": {"match_all": {}}})
+    res = connection.search(index="bronco-hack-2017",
+                            doc_type="therapy_session",
+                            body={"query": {"match_all": {}}},
+                            filter_path=["took", "hits.hits._id", "hits.hits.score"])
     return json.dumps(res), 200, {'ContentType': 'application/json'}
 
 
