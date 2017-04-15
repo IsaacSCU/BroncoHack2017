@@ -35,6 +35,7 @@ def eeg():
     """
     # Extract the EEG data
     eeg = request.get_json().get('Body', None)
+    print(eeg) 
 
     # Save EEG data to common dictionary
     if eeg:
@@ -65,9 +66,6 @@ def alexa():
     # Save to the DB
     save_to_elasticsearch()
 
-    # Clear the cache dict for the next 2 inputs
-    app.cache_dict = {}
-
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
@@ -92,10 +90,22 @@ def response():
     connection = Elasticsearch(hosts='{}:{}'.format(HOST, PORT))
     res = connection.search(index="bronco-hack-2017",
                             doc_type="therapy_session",
-                            body={"query": {"match_all": {}}},
+                            body={
+	"size": 11,
+	"query": {
+	    "match_all": {}
+	},
+	    "sort": [
+	   {
+	      "timestamp": {
+	         "order": "desc"
+	      }
+	   }
+	]
+	})
     data = {}
-    for i, resp in enumerate(res):
-        data[i] = resp['hits']['hits']
+    for resp in reversed(res['hits']['hits']):
+	data[resp['_source']['timestamp']] = resp['_source']
 
     return json.dumps(data), 200, {'ContentType': 'application/json'}
 
