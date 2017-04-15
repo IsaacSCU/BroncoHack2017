@@ -92,8 +92,12 @@ def response():
     connection = Elasticsearch(hosts='{}:{}'.format(HOST, PORT))
     res = connection.search(index="bronco-hack-2017",
                             doc_type="therapy_session",
-                            body={"query": {"match_all": {}}})
-    return json.dumps(res), 200, {'ContentType': 'application/json'}
+                            body={"query": {"match_all": {}}},
+    data = {}
+    for i, resp in enumerate(res):
+        data[i] = resp['hits']['hits']
+
+    return json.dumps(data), 200, {'ContentType': 'application/json'}
 
 
 def create_therapy_session_object():
