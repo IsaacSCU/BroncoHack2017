@@ -94,7 +94,11 @@ def response():
                             doc_type="therapy_session",
                             body={"query": {"match_all": {}}},
                             filter_path=["took", "hits.hits._id", "hits.hits.score"])
-    return json.dumps(res), 200, {'ContentType': 'application/json'}
+    data = {}
+    for i, resp in enumerate(res):
+        data[i] = resp['hits']['hits']
+
+    return json.dumps(data), 200, {'ContentType': 'application/json'}
 
 
 def create_therapy_session_object():
