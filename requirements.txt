@@ -1,4 +1,4 @@
-watson-developer-cloud==0.25.2
+watson-developer-cloud>=0.25.2
 click==6.7
 elasticsearch==5.3.0
 Flask==0.12.1

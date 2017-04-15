@@ -1,5 +1,6 @@
 from flask import Flask, request
 from elasticsearch import Elasticsearch
+from watson_developer_cloud import ToneAnalyzerV3
 
 import os
 import json
@@ -36,10 +37,11 @@ def eeg():
     eeg = request.get_json().get('Body', None)
 
     # Save EEG data to common dictionary
-    if(eeg):
+    if eeg:
         app.cache_dict['eeg'] = eeg
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
 
 @app.route("/alexa", methods=['GET', 'POST'])
 def alexa():
@@ -57,6 +59,9 @@ def alexa():
     if alexa_text:
         app.cache_dict['alexa'] = alexa_text
 
+    watson_response = get_watson_response(alexa_text['alexa_text'])
+    app.cache_dict['watson_response'] = watson_response
+
     # Save to the DB
     save_to_elasticsearch()
 
@@ -64,6 +69,22 @@ def alexa():
     app.cache_dict = {}
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+def get_watson_response(alexa_text):
+    creds = ''
+    with open('api_credentials.txt') as f:
+        creds = json.loads(f.read())
+
+    tone_analyzer = ToneAnalyzerV3(
+        username=creds['username'],
+        password=creds['password'],
+        version='2016-02-11')
+
+    watson_response = tone_analyzer.tone(text=alexa_text)
+
+    #print(watson_response)
+    return watson_response
 
 
 def create_therapy_session_object():
@@ -87,16 +108,14 @@ def create_therapy_session_object():
         'username': username,
         'timestamp': timestamp,
         'alexa_text': alexa_text,
-        'watson_response': {
-            'mood': watson_response['mood'],
-            'tone': watson_response['tone']
-        },
+        'watson_response': watson_response,
         'eeg_averages': {
             'mellow': eeg['mellow'],
             'focused': eeg['focused']
         }
     }
 
+    # print(therapy_session)
     return therapy_session
 
 
