@@ -66,6 +66,11 @@ def alexa():
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
+@app.route("/response", methods=['GET'])
+def response():
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
 def create_therapy_session_object():
     """
     Create a therapy session object from the Alexa response and EEG data for upload to elasticsearch
