@@ -12,7 +12,7 @@ OPTIONS = {}
 
 app.cache_dict = {
     'alexa': {
-        'timestamp': '2017-4-20',
+        'timestamp': '3',
         'username': 'Julian Callin',
         'alexa_text': 'Today I had a good day, but it was slightly difficult and boring. I was mildly hungover'
     },
