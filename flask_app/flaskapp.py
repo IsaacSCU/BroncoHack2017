@@ -39,6 +39,7 @@ def eeg():
     if(eeg):
         app.cache_dict['eeg'] = eeg
 
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 @app.route("/alexa", methods=['GET', 'POST'])
 def alexa():
