@@ -1,4 +1,4 @@
-muse-player -l tcp:5000 -D >out.txt & sleep 8; kill $!
+muse-player -l tcp:5000 -D >out.txt & sleep 10; kill $!
 
 cat out.txt
 
